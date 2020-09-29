@@ -12,13 +12,13 @@ variable "target_revision" {
   default     = ""
 }
 variable "chart" {
-  type = string
+  type        = string
   description = "The name of the Helm chart"
 }
 variable "path" {
   type        = string
   description = ""
-  default = ""
+  default     = ""
 }
 variable "release_name" {
   type        = string
@@ -30,10 +30,10 @@ variable "helm_template_version" {
   default     = null
 }
 variable "helm_parameters" {
-  type        = list(object({
-    name: string,
-    value: any,
-    force_string: bool,
+  type = list(object({
+    name : string,
+    value : any,
+    force_string : bool,
   }))
   description = "Parameters that will override helm_values"
   default     = []

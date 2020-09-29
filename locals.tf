@@ -1,4 +1,12 @@
 locals {
+  helm_parameters = [
+    for parameter in var.helm_parameters :
+    {
+      name : parameter["name"],
+      value : parameter["value"],
+      forceString : parameter["force_string"]
+    }
+  ]
   helm_application = {
     apiVersion : "argoproj.io/v1alpha1"
     kind : "Application"
@@ -17,7 +25,7 @@ locals {
         helm : {
           version : var.helm_template_version
           releaseName : var.release_name
-          parameters : var.helm_parameters
+          parameters : local.helm_parameters
           values : var.helm_values
         }
       }
