@@ -30,7 +30,11 @@ variable "helm_template_version" {
   default     = null
 }
 variable "helm_parameters" {
-  type        = list(any)
+  type        = list(object({
+    name: string,
+    value: any,
+    force_string: bool,
+  }))
   description = "Parameters that will override helm_values"
   default     = []
 }

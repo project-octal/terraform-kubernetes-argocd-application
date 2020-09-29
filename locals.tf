@@ -17,7 +17,7 @@ locals {
         helm : {
           version : var.helm_template_version
           releaseName : var.release_name
-          parameters : yamlencode(var.helm_parameters)
+          parameters : var.helm_parameters
           values : var.helm_values
         }
       }
