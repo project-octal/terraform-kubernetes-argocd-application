@@ -1,11 +1,11 @@
 locals {
   helm_parameters = [
     for parameter in var.helm_parameters :
-    {
+    yamlencode({
       name : parameter["name"],
       value : parameter["value"],
       forceString : parameter["force_string"]
-    }
+    })
   ]
   helm_application = {
     apiVersion : "argoproj.io/v1alpha1"
