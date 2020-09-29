@@ -9,11 +9,16 @@ variable "repo_url" {
 variable "target_revision" {
   type        = string
   description = "Revision of the Helm application manifests to use"
-  default     = "HEAD"
+  default     = ""
+}
+variable "chart" {
+  type = string
+  description = "The name of the Helm chart"
 }
 variable "path" {
   type        = string
   description = ""
+  default = ""
 }
 variable "release_name" {
   type        = string

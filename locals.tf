@@ -12,6 +12,7 @@ locals {
       source : {
         repoURL : var.repo_url
         targetRevision : var.target_revision
+        chart : var.chart
         path : var.path
         helm : {
           version : var.helm_template_version
