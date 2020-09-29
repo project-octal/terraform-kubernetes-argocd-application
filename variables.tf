@@ -39,9 +39,9 @@ variable "helm_parameters" {
   default     = []
 }
 variable "helm_values" {
-  type        = string
+  type        = map(any)
   description = "Helm values as a block of yaml"
-  default     = ""
+  default     = {}
 }
 variable "name" {
   type        = string
