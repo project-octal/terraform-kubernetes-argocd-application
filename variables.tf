@@ -114,3 +114,8 @@ variable "ignore_differences" {
   description = "Ignore differences at the specified json pointers"
   default     = []
 }
+variable "labels" {
+  type        = map(string)
+  description = ""
+  default     = {}
+}

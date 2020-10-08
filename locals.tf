@@ -1,5 +1,7 @@
 locals {
 
+  labels = merge(var.labels, {})
+
   helm_parameters = [
     for parameter in var.helm_parameters :
     {
@@ -28,7 +30,7 @@ locals {
           version     = var.helm_template_version
           releaseName = var.release_name
           parameters  = local.helm_parameters
-          values      = yamlencode(var.helm_values)
+          values      = yamlencode(merge(local.labels,var.helm_values)
         }
       }
       destination = {
