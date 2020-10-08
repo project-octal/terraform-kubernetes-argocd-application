@@ -1,5 +1,9 @@
 locals {
 
+  labels = merge(var.labels, {
+
+  })
+
   helm_parameters = [
     for parameter in var.helm_parameters :
     {
@@ -15,6 +19,7 @@ locals {
     metadata = {
       name      = var.name
       namespace = var.argocd_namespace
+      labels    = local.labels
     }
     finalizers = var.cascade_delete ? ["resources-finalizer.argocd.argoproj.io"] : []
     spec = {
