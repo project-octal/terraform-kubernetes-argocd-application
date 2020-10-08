@@ -1,6 +1,8 @@
 locals {
 
-  labels = merge(var.labels, {})
+  labels = merge(var.labels, {
+
+  })
 
   helm_parameters = [
     for parameter in var.helm_parameters :
@@ -17,6 +19,7 @@ locals {
     metadata = {
       name      = var.name
       namespace = var.argocd_namespace
+      labels    = local.labels
     }
     finalizers = var.cascade_delete ? ["resources-finalizer.argocd.argoproj.io"] : []
     spec = {
@@ -30,7 +33,7 @@ locals {
           version     = var.helm_template_version
           releaseName = var.release_name
           parameters  = local.helm_parameters
-          values      = yamlencode(merge(local.labels,var.helm_values)
+          values      = yamlencode(merge(local.labels, var.helm_values))
         }
       }
       destination = {
