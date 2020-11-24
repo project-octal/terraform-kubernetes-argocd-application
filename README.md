@@ -1,2 +1,2 @@
-# terraform-kubernetes-linkerd
-Simplifies the deployment and management of Linkerd on a Kubernetes cluster.
+# terraform-argocd-application
+A Terraform module for provisioning ArgoCD applications
