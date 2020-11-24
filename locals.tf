@@ -33,7 +33,7 @@ locals {
           version     = var.helm_template_version
           releaseName = var.release_name
           parameters  = local.helm_parameters
-          values      = yamlencode(merge({labels = merge(local.labels, var.labels)}, var.helm_values))
+          values      = yamlencode(merge({ labels = merge(local.labels, var.labels) }, var.helm_values))
         }
       }
       destination = {
