@@ -1,2 +1,2 @@
 # terraform-argocd-application
-A Terraform module for provisioning ArgoCD applications
+A Terraform module for deploying ArgoCD application manifests.
