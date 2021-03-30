@@ -59,6 +59,7 @@ variable "cascade_delete" {
 variable "destination_server" {
   type        = string
   description = ""
+  default     = "https://kubernetes.default.svc"
 }
 variable "namespace" {
   type        = string
