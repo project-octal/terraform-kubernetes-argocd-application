@@ -31,7 +31,7 @@ locals {
         path           = var.path
         helm = {
           version     = var.helm_template_version
-          releaseName = if var.release_name == null ? var.name : var.release_name
+          releaseName = var.release_name == null ? var.name : var.release_name
           parameters  = local.helm_parameters
           values      = yamlencode(merge({ labels = merge(local.labels, var.labels) }, var.helm_values))
         }

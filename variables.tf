@@ -23,7 +23,7 @@ variable "path" {
 variable "release_name" {
   type        = string
   description = "Release name override (defaults to application name)"
-  defaut      = null
+  default     = null
 }
 variable "helm_template_version" {
   type        = string
