@@ -40,6 +40,7 @@ locals {
         server    = var.destination_server
         namespace = var.namespace
       }
+      ignoreDifferences = var.ignore_differences
       syncPolicy = {
         automated = {
           prune    = var.automated_prune

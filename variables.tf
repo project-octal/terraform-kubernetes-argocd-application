@@ -112,7 +112,7 @@ variable "retry_backoff_max_duration" {
   default     = "3m"
 }
 variable "ignore_differences" {
-  type        = list(object({ group : string, kind : string, jsonPointers : list(string) }))
+  type        = list(object({ kind : string, group : string, name: string, jsonPointers : list(string) }))
   description = "Ignore differences at the specified json pointers"
   default     = []
 }
