@@ -25,11 +25,6 @@ variable "release_name" {
   description = "Release name override (defaults to application name)"
   default     = null
 }
-variable "helm_template_version" {
-  type        = string
-  description = "Optional Helm version to template with. If omitted it will fallback to look at the 'apiVersion' in Chart.yaml and decide which Helm binary to use automatically. This field can be either 'v2' or 'v3'."
-  default     = null
-}
 variable "helm_parameters" {
   type = list(object({
     name : string,

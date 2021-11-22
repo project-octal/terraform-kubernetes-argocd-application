@@ -12,9 +12,17 @@ The only hard requirement is a Kubernetes cluster with a functioning ArgoCD depl
 
 --- 
 
-### TODO:
-- Update the Terraform version to 1.0+
-- Deprecate the `k8s` provider in favor of the `kubernetes_manifest` resource in the `kubernetes` provider.
+### Upate from >v1.0.5
+When upgrading from v1.0.5 or older to v1.1.0+ you will need to import all the argocd application manifests
+
+**Import the resource state from the cluster**
+```shell
+# Import the ArgoCD application using the new provider
+terraform import -var-file=secrets.tfvars 'module.octal-extras.module.octal_extras_kubedb[0].module.kubedb_argocd_application.kubernetes_manifest.argo_application' "apiVersion=argoproj.io/v1alpha1,kind=Application,namespace=kube-argocd,name=kubedb"
+
+# Delete the state reference to the old k8s_manifest object
+terraform state rm 'module.octal-extras.module.octal_extras_kubedb[0].module.kubedb_argocd_application.k8s_manifest.argo_application' 
+```
 
 ### Example
 ```hcl-terraform
