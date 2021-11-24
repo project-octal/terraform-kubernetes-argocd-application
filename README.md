@@ -70,14 +70,13 @@ module "argocd_application" {
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13 |
-| <a name="requirement_k8s"></a> [k8s](#requirement\_k8s) | >= 0.8.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.14.8, < 2.0.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_k8s"></a> [k8s](#provider\_k8s) | >= 0.8.0 |
+| <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | 2.6.1 |
 
 ## Modules
 
@@ -87,7 +86,7 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [k8s_manifest.argo_application](https://registry.terraform.io/providers/banzaicloud/k8s/latest/docs/resources/manifest) | resource |
+| [kubernetes_manifest.argo_application](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/manifest) | resource |
 
 ## Inputs
 
@@ -100,7 +99,6 @@ No modules.
 | <a name="input_chart"></a> [chart](#input\_chart) | The name of the Helm chart | `string` | n/a | yes |
 | <a name="input_destination_server"></a> [destination\_server](#input\_destination\_server) | n/a | `string` | `"https://kubernetes.default.svc"` | no |
 | <a name="input_helm_parameters"></a> [helm\_parameters](#input\_helm\_parameters) | Parameters that will override helm\_values | <pre>list(object({<br>    name : string,<br>    value : any,<br>    force_string : bool,<br>  }))</pre> | `[]` | no |
-| <a name="input_helm_template_version"></a> [helm\_template\_version](#input\_helm\_template\_version) | Optional Helm version to template with. If omitted it will fallback to look at the 'apiVersion' in Chart.yaml and decide which Helm binary to use automatically. This field can be either 'v2' or 'v3'. | `string` | `null` | no |
 | <a name="input_helm_values"></a> [helm\_values](#input\_helm\_values) | Helm values as a block of yaml | `any` | `{}` | no |
 | <a name="input_ignore_differences"></a> [ignore\_differences](#input\_ignore\_differences) | Ignore differences at the specified json pointers | `list(object({ kind : string, group : string, name : string, jsonPointers : list(string) }))` | `[]` | no |
 | <a name="input_labels"></a> [labels](#input\_labels) | n/a | `map(string)` | `{}` | no |
