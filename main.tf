@@ -1,17 +1,17 @@
 resource "kubernetes_manifest" "argo_application" {
-  computed_fields = [ 
+  computed_fields = [
     "metadata.labels",
     "metadata.annotations",
     "metadata.finalizers",
     "spec.source.helm.version"
   ]
   manifest = {
-  apiVersion = "argoproj.io/v1alpha1"
+    apiVersion = "argoproj.io/v1alpha1"
     kind       = "Application"
     metadata = {
-      name      = var.name
-      namespace = var.argocd_namespace
-      labels    = local.labels
+      name       = var.name
+      namespace  = var.argocd_namespace
+      labels     = local.labels
       finalizers = var.cascade_delete == true ? ["resources-finalizer.argocd.argoproj.io"] : []
     }
     spec = {
