@@ -29,7 +29,7 @@ terraform state rm 'module.kubedb_argocd_application.k8s_manifest.argo_applicati
 
 module "project" {
   source  = "project-octal/argocd-project/kubernetes"
-  version = "1.0.4"
+  version = "2.0.0"
   
   argocd_namespace = data.terraform_remote_state.infra.outputs.cluster_argocd_namespace
   name             = local.instance_name
@@ -44,7 +44,7 @@ module "project" {
 
 module "argocd_application" {
   source  = "project-octal/argocd-application/kubernetes"
-  version = "1.0.4"
+  version = "2.0.0"
 
   argocd_namespace    = "kube-argocd"
   destination_server  = "https://kubernetes.default.svc"
@@ -54,6 +54,33 @@ module "argocd_application" {
   repo_url            = "https://argo-project-permitted-repo-url/"
   chart               = "foo-chart"
   target_revision     = "0.0.1"
+  helm_values         = {
+      helm_values = "go-here"
+  }
+  automated_self_heal = true
+  automated_prune     = true
+  labels              = {
+      custom = "lables-to-apply"
+  }
+}
+
+// The following module will create app that deploys from git repo under chart directory
+// chart variable is applicable for git based application sources. For that reason, it should be set empty
+// Otherwise, argocd app will be in unknown state
+
+module "argocd_application_git" {
+  source  = "project-octal/argocd-application/kubernetes"
+  version = "2.0.0"
+
+  argocd_namespace    = "kube-argocd"
+  destination_server  = "https://kubernetes.default.svc"
+  project             = module.project.name
+  name                = "example-application-name"
+  namespace           = "argo-project-permitted-namespace"
+  repo_url            = "git@github.com:myorg/myrepo.git"
+  chart               = ""
+  path                = "Chart"  // location of helm chart in the git repo
+  target_revision     = "master" // git branch name
   helm_values         = {
       helm_values = "go-here"
   }
