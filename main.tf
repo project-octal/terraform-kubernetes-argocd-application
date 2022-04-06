@@ -1,10 +1,15 @@
 resource "kubernetes_manifest" "argo_application" {
+
   computed_fields = [
     "metadata.labels",
     "metadata.annotations",
     "metadata.finalizers",
     "spec.source.helm.version"
   ]
+  field_manager {
+    # force field manager conflicts to be overridden
+    force_conflicts = true
+  }
   manifest = {
     apiVersion = "argoproj.io/v1alpha1"
     kind       = "Application"
