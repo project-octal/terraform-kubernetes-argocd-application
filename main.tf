@@ -26,6 +26,9 @@ resource "kubernetes_manifest" "argo_application" {
         targetRevision = var.target_revision
         chart          = var.chart
         path           = var.path
+        directory = {
+          recurse = var.directory_recurse
+        }
         helm = {
           releaseName = var.release_name == null ? var.name : var.release_name
           parameters  = local.helm_parameters

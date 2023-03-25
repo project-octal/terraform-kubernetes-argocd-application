@@ -20,6 +20,11 @@ variable "path" {
   description = ""
   default     = ""
 }
+variable "directory_recurse" {
+  type        = bool
+  description = "Recursively search for manifests in the specified path"
+  default     = false
+}
 variable "release_name" {
   type        = string
   description = "Release name override (defaults to application name)"
