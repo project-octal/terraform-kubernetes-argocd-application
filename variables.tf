@@ -11,6 +11,11 @@ variable "target_revision" {
   description = "Revision of the Helm application manifests to use"
   default     = ""
 }
+
+variable "use_chart" {
+  type    = bool
+  default = true
+}
 variable "chart" {
   type        = string
   description = "The name of the Helm chart"
