@@ -79,7 +79,7 @@ variable "automated_prune" {
 variable "automated_self_heal" {
   type        = bool
   description = "Specifies if partial app sync should be executed when resources are changed only in target Kubernetes cluster and no git change detected"
-  default     = false
+  default     = null
 }
 variable "sync_options" {
   type        = list(string)
