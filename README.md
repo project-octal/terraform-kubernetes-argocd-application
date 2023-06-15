@@ -1,109 +1,117 @@
-![Project-Octal: ArgoCD Application](docs/images/project-octal-argocd.svg "Project-Octal: ArgoCD Application")
+[![Maintained](https://img.shields.io/badge/Maintained%20by-XOAP-success)](https://xoap.io)
+[![Terraform](https://img.shields.io/badge/Terraform-%3E%3D1.1.6-blue)](https://terraform.io)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+# Table of Contents
+
+- [Introduction](#introduction)
+- [Guidelines](#guidelines)
+- [Requirements](#requirements)
+- [Providers](#providers)
+- [Modules](#modules)
+- [Resources](#resources)
+- [Inputs](#inputs)
+- [Outputs](#outputs)
+
 ---
 
-A Terraform module for provisioning and configuring ArgoCD applications.
-This module can be used with or without the Project-Octal [terraform-kubernetes-argocd](https://github.com/project-octal/terraform-kubernetes-argocd) module.
-The only hard requirement is a Kubernetes cluster with a functioning ArgoCD deployment and project for the application to reside in.
+## Introduction
+
+This is a template for Terraform modules.
+
+It is part of our XOAP Automation Forces Open Source community library to give you a quick start into Infrastructure as Code deployments with Terraform.
+
+We have a lot of Terraform modules that are Open Source and maintained by the XOAP staff.
+
+Please check the links for more info, including usage information and full documentation:
+
+- [XOAP Website](https://xoap.io)
+- [XOAP Documentation](https://docs.xoap.io)
+- [Twitter](https://twitter.com/xoap_io)
+- [LinkedIn](https://www.linkedin.com/company/xoap_io)
 
 ---
 
-***Note:*** This repository has been renamed from `terraform-argocd-application` to `terraform-kubernetes-argocd-application`
- to better follow the [Terraform module naming convention](https://www.terraform.io/docs/registry/modules/publish.html). 
+## Guidelines
 
---- 
+We are using the following guidelines to write code and make it easier for everyone to follow a destinctive guideline. Please check these links before starting to work on changes.
 
-### Update from v1.0.5
-When upgrading from v1.0.5 or older to v2.0.0+ you will need to import all the argocd application manifests
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
 
-**Import the resource state from the cluster**
-```shell
-# Import the ArgoCD application using the new provider
-terraform import -var-file=secrets.tfvars 'module.kubedb_argocd_application.kubernetes_manifest.argo_application' "apiVersion=argoproj.io/v1alpha1,kind=Application,namespace=kube-argocd,name=kubedb"
+Git Naming Conventions are an important part of the development process. They descrtibe how Branched, Commit Messages, Pull Requests and Tags should look like to make the easily understandebla for everybody in the development chain.
 
-# Delete the state reference to the old k8s_manifest object
-terraform state rm 'module.kubedb_argocd_application.k8s_manifest.argo_application' 
-```
+[Git Naming Conventions](https://namingconvention.org/git/)
 
-### Example
-```hcl-terraform
+he Conventional Commits specification is a lightweight convention on top of commit messages. It provides an easy set of rules for creating an explicit commit history; which makes it easier to write automated tools on top of.
 
-module "project" {
-  source  = "project-octal/argocd-project/kubernetes"
-  version = "2.0.0"
-  
-  argocd_namespace = data.terraform_remote_state.infra.outputs.cluster_argocd_namespace
-  name             = local.instance_name
-  description      = local.project_description
-  destinations = [
-    {
-      server    = "https://kubernetes.default.svc"
-      namespace = kubernetes_namespace.kergiva_namespace.metadata.0.name
-    }
-  ]
-}
+[Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
 
-module "argocd_application" {
-  source  = "project-octal/argocd-application/kubernetes"
-  version = "2.0.0"
+The better a Pull Request description is, the better a review can understand and decide on how to review the changes. This improves implementation speed and reduces communication between the requester and the reviewer resulting in much less overhead.
 
-  argocd_namespace    = "kube-argocd"
-  destination_server  = "https://kubernetes.default.svc"
-  project             = module.project.name
-  name                = "example-application-name"
-  namespace           = "argo-project-permitted-namespace"
-  repo_url            = "https://argo-project-permitted-repo-url/"
-  chart               = "foo-chart"
-  target_revision     = "0.0.1"
-  helm_values         = {
-      helm_values = "go-here"
-  }
-  automated_self_heal = true
-  automated_prune     = true
-  labels              = {
-      custom = "lables-to-apply"
-  }
-}
+[Wiriting A Great Pull Request Description](https://www.pullrequest.com/blog/writing-a-great-pull-request-description/)
 
-// The following module will create app that deploys from git repo under chart directory
-// chart variable is applicable for git based application sources. For that reason, it should be set empty
-// Otherwise, argocd app will be in unknown state
+Versioning is a crucial part for Terraform Stacks and Modules. Without version tags you cannot clearly create a stable environment and be sure that your latest changes won't crash your production environment (sure it still can happen, but we are trying our best to implement everything that we can to reduce the risk)
 
-module "argocd_application_git" {
-  source  = "project-octal/argocd-application/kubernetes"
-  version = "2.0.0"
+[Semantic Versioning](https://semver.org)
 
-  argocd_namespace    = "kube-argocd"
-  destination_server  = "https://kubernetes.default.svc"
-  project             = module.project.name
-  name                = "example-application-name"
-  namespace           = "argo-project-permitted-namespace"
-  repo_url            = "git@github.com:myorg/myrepo.git"
-  chart               = ""
-  path                = "Chart"  // location of helm chart in the git repo
-  target_revision     = "master" // git branch name
-  helm_values         = {
-      helm_values = "go-here"
-  }
-  automated_self_heal = true
-  automated_prune     = true
-  labels              = {
-      custom = "lables-to-apply"
-  }
-}
-```
+Naming Conventions for Terraform resources must be used.
 
-<!-- BEGIN_TF_DOCS -->
+[Terraform Naming Conventions](https://www.terraform-best-practices.com/naming)
+
+---
+
+## Usage
+
+### Installation
+
+For the first ime using this template necessary tools need to be installed.
+A script for PowerShell Core is provided under ./build/init.ps1
+
+This script will install following dependencies:
+
+- [pre-commit](https://github.com/pre-commit/pre-commit)
+- [terraform-docs](https://github.com/terraform-docs/terraform-docs)
+- [tflint](https://github.com/terraform-linters/tflint)
+- [tfsec](https://github.com/aquasecurity/tfsec)
+- [checkov](https://github.com/bridgecrewio/checkov)
+- [terrascan](https://github.com/accurics/terrascan)
+- [kics](https://github.com/Checkmarx/kics)
+
+This script configures:
+
+- global git template under ~/.git-template
+- global pre-commit hooks for prepare-commit-msg and commit-msg under ~/.git-template/hooks
+- github actions:
+  - linting and checks for pull requests from dev to master/main
+  - automatic tagging and release creation on pushes to master/main
+  - dependabot updates
+
+It currently supports the automated installation for macOS. Support for Windows and Linux will be available soon.
+
+### Synchronisation
+
+We provided a script under ./build/sync_template.ps1 to fetch the latest changes from this template repository.
+Please be aware that this is mainly a copy operation which means all your current changes have to be committed first and after running the script you have to merge this changes into your codebase.
+
+### Configuration
+
+---
+
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.14.8, < 2.0.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=1.1.6 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 2.11.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | 2.6.1 |
+| <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | n/a |
 
 ## Modules
 
@@ -113,38 +121,40 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [kubernetes_manifest.argo_application](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/manifest) | resource |
+| [kubernetes_deployment.this](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/deployment) | resource |
+| [kubernetes_horizontal_pod_autoscaler.this](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/horizontal_pod_autoscaler) | resource |
+| [kubernetes_ingress_v1.this](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/ingress_v1) | resource |
+| [kubernetes_pod_disruption_budget.this](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/pod_disruption_budget) | resource |
+| [kubernetes_service.this](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/service) | resource |
+| [kubernetes_service_account.this](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/service_account) | resource |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_argocd_namespace"></a> [argocd\_namespace](#input\_argocd\_namespace) | The name of the target ArgoCD Namespace | `string` | n/a | yes |
-| <a name="input_automated_prune"></a> [automated\_prune](#input\_automated\_prune) | Specifies if resources should be pruned during auto-syncing | `bool` | `false` | no |
-| <a name="input_automated_self_heal"></a> [automated\_self\_heal](#input\_automated\_self\_heal) | Specifies if partial app sync should be executed when resources are changed only in target Kubernetes cluster and no git change detected | `bool` | `false` | no |
-| <a name="input_cascade_delete"></a> [cascade\_delete](#input\_cascade\_delete) | Set to true if this application should cascade delete | `bool` | `false` | no |
-| <a name="input_chart"></a> [chart](#input\_chart) | The name of the Helm chart | `string` | n/a | yes |
-| <a name="input_destination_server"></a> [destination\_server](#input\_destination\_server) | n/a | `string` | `"https://kubernetes.default.svc"` | no |
-| <a name="input_helm_parameters"></a> [helm\_parameters](#input\_helm\_parameters) | Parameters that will override helm\_values | <pre>list(object({<br>    name : string,<br>    value : any,<br>    force_string : bool,<br>  }))</pre> | `[]` | no |
-| <a name="input_helm_values"></a> [helm\_values](#input\_helm\_values) | Helm values as a block of yaml | `any` | `{}` | no |
-| <a name="input_ignore_differences"></a> [ignore\_differences](#input\_ignore\_differences) | Ignore differences at the specified json pointers | `list(object({ kind : string, group : string, name : string, jsonPointers : list(string) }))` | `[]` | no |
-| <a name="input_labels"></a> [labels](#input\_labels) | n/a | `map(string)` | `{}` | no |
-| <a name="input_name"></a> [name](#input\_name) | The name of this application | `string` | n/a | yes |
-| <a name="input_namespace"></a> [namespace](#input\_namespace) | n/a | `string` | n/a | yes |
-| <a name="input_path"></a> [path](#input\_path) | n/a | `string` | `""` | no |
-| <a name="input_project"></a> [project](#input\_project) | The project that this ArgoCD application will be placed into. | `string` | n/a | yes |
-| <a name="input_release_name"></a> [release\_name](#input\_release\_name) | Release name override (defaults to application name) | `string` | `null` | no |
-| <a name="input_repo_url"></a> [repo\_url](#input\_repo\_url) | Source of the Helm application manifests | `string` | n/a | yes |
-| <a name="input_retry_backoff_duration"></a> [retry\_backoff\_duration](#input\_retry\_backoff\_duration) | The amount to back off. Default unit is seconds, but could also be a duration (e.g. `2m`, `1h`) | `string` | `"5s"` | no |
-| <a name="input_retry_backoff_factor"></a> [retry\_backoff\_factor](#input\_retry\_backoff\_factor) | A factor to multiply the base duration after each failed retry | `number` | `2` | no |
-| <a name="input_retry_backoff_max_duration"></a> [retry\_backoff\_max\_duration](#input\_retry\_backoff\_max\_duration) | The maximum amount of time allowed for the backoff strategy | `string` | `"3m"` | no |
-| <a name="input_retry_limit"></a> [retry\_limit](#input\_retry\_limit) | Number of failed sync attempt retries; unlimited number of attempts if less than 0 | `number` | `5` | no |
-| <a name="input_sync_option_create_namespace"></a> [sync\_option\_create\_namespace](#input\_sync\_option\_create\_namespace) | Namespace Auto-Creation ensures that namespace specified as the application destination exists in the destination cluster. | `bool` | `true` | no |
-| <a name="input_sync_option_validate"></a> [sync\_option\_validate](#input\_sync\_option\_validate) | disables resource validation (equivalent to 'kubectl apply --validate=true') | `bool` | `false` | no |
-| <a name="input_sync_options"></a> [sync\_options](#input\_sync\_options) | A list of sync options to apply to the application | `list(string)` | `[]` | no |
-| <a name="input_target_revision"></a> [target\_revision](#input\_target\_revision) | Revision of the Helm application manifests to use | `string` | `""` | no |
+| <a name="input_additional_hosts"></a> [additional\_hosts](#input\_additional\_hosts) | Map of additional hosts to be added to the ingress. | `map(string)` | `{}` | no |
+| <a name="input_context"></a> [context](#input\_context) | Default environmental context | <pre>object({<br>    organization = string<br>    environment  = string<br>    account      = string<br>    product      = string<br>    tags         = map(string)<br>  })</pre> | n/a | yes |
+| <a name="input_environment_variables"></a> [environment\_variables](#input\_environment\_variables) | Map with environment variables injected to the containers. | `map(any)` | n/a | yes |
+| <a name="input_hpa"></a> [hpa](#input\_hpa) | Object with autoscaler limits and requests. | <pre>object({<br>    max_replicas                      = number<br>    min_replicas                      = number<br>    target_cpu_utilization_percentage = number<br>  })</pre> | n/a | yes |
+| <a name="input_image"></a> [image](#input\_image) | Image name and tag to deploy. | `string` | n/a | yes |
+| <a name="input_ingress"></a> [ingress](#input\_ingress) | n/a | <pre>object({<br>    host          = string<br>    ingress_class = optional(string, "kong")<br>    annotations   = optional(map(string), {})<br><br>  })</pre> | `null` | no |
+| <a name="input_name"></a> [name](#input\_name) | Name used to identify deployed container and all related resources. | `string` | n/a | yes |
+| <a name="input_namespace"></a> [namespace](#input\_namespace) | Kubernetes namespace where resources must be created. | `string` | n/a | yes |
+| <a name="input_paths"></a> [paths](#input\_paths) | Object mapping local paths to container paths | `map(any)` | `{}` | no |
+| <a name="input_resource_config"></a> [resource\_config](#input\_resource\_config) | Object with resource limits and requests. | <pre>object({<br>    limits = object({<br>      cpu    = string<br>      memory = string<br>    })<br><br>    requests = object({<br>      cpu    = string<br>      memory = string<br>    })<br>  })</pre> | <pre>{<br>  "limits": {<br>    "cpu": "0.5",<br>    "memory": "512Mi"<br>  },<br>  "requests": {<br>    "cpu": "250m",<br>    "memory": "50Mi"<br>  }<br>}</pre> | no |
+| <a name="input_service"></a> [service](#input\_service) | n/a | <pre>object({<br>    container_port = number<br>    target_port    = number<br>    type           = string<br>    https_enabled  = bool<br>    annotations    = optional(map(string), {})<br>    healthcheck = object({<br>      path                  = string<br>      initial_delay_seconds = number<br>      timeout_seconds       = number<br>      success_threshold     = number<br>      failure_threshold     = number<br>      period_seconds        = number<br>    })<br>  })</pre> | `null` | no |
+| <a name="input_service_account_annotations"></a> [service\_account\_annotations](#input\_service\_account\_annotations) | Annotations to be added to the service account resource. | `map(string)` | n/a | yes |
 
 ## Outputs
 
-No outputs.
-<!-- END_TF_DOCS -->
+| Name | Description |
+|------|-------------|
+| <a name="output_deployment"></a> [deployment](#output\_deployment) | n/a |
+| <a name="output_ingress"></a> [ingress](#output\_ingress) | n/a |
+| <a name="output_name"></a> [name](#output\_name) | The name of the resources |
+| <a name="output_namespace"></a> [namespace](#output\_namespace) | The namespace where the resources will be created |
+| <a name="output_service"></a> [service](#output\_service) | n/a |
+| <a name="output_service_account"></a> [service\_account](#output\_service\_account) | n/a |
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- markdownlint-disable -->
+<!-- prettier-ignore-end -->
