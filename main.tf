@@ -24,12 +24,9 @@ resource "kubernetes_manifest" "argo_application" {
       source = {
         repoURL        = var.repo_url
         targetRevision = var.target_revision
-        chart          = var.chart
         path           = var.path
-        helm = {
-          releaseName = var.release_name == null ? var.name : var.release_name
-          parameters  = local.helm_parameters
-          values      = yamlencode(merge({ labels = local.labels }, var.helm_values))
+        directory = {
+          recurse = var.directory_recurse
         }
       }
       destination = {

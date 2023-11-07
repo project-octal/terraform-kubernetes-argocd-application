@@ -11,6 +11,11 @@ variable "target_revision" {
   description = "Revision of the Helm application manifests to use"
   default     = ""
 }
+
+variable "use_chart" {
+  type    = bool
+  default = true
+}
 variable "chart" {
   type        = string
   description = "The name of the Helm chart"
@@ -19,6 +24,11 @@ variable "path" {
   type        = string
   description = ""
   default     = ""
+}
+variable "directory_recurse" {
+  type        = bool
+  description = "Recursively search for manifests in the specified path"
+  default     = false
 }
 variable "release_name" {
   type        = string
@@ -69,7 +79,7 @@ variable "automated_prune" {
 variable "automated_self_heal" {
   type        = bool
   description = "Specifies if partial app sync should be executed when resources are changed only in target Kubernetes cluster and no git change detected"
-  default     = false
+  default     = null
 }
 variable "sync_options" {
   type        = list(string)
